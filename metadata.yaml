@@ -1,0 +1,57 @@
+# This file populates the Overview on Charmhub.
+
+# The charm package name, no spaces (required)
+# See https://juju.is/docs/sdk/naming#heading--naming-charms for guidance.
+name: tor-obfs4-bridge-k8s
+
+# The following metadata are human-readable and will be published prominently on Charmhub.
+
+# (Recommended)
+display-name: Tor obfs4 bridge
+
+# (Required)
+summary: Charmed tor obfs4-bridge
+
+description: |
+  A k8s charm for tor-obfs4-bridge.
+
+  The charm conveniently exposes operations an admin would like to perform on the bridge, as well
+  as a convenient default storage persistence.
+
+  The charm can also forward logs (and corresponding alert rules) to Loki.
+
+  This charm can be useful for tor enthusiasts who would like to offer a tor bridge and would like
+  to avoid dealing with and maintaining docker-compose deployments.
+
+# Your workload’s containers.
+containers:
+  bridge:
+    resource: bridge-image
+    mounts:
+      - storage: data
+        location: /var/lib/tor
+      - storage: logs
+        location: /var/log/tor
+
+# This field populates the Resources tab on Charmhub.
+resources:
+  # An OCI image resource for each container listed above.
+  # You may remove this if your charm will run without a workload sidecar container.
+  bridge-image:
+    type: oci-image
+    description: OCI image for the bridge container
+    # The upstream-source field is ignored by Juju. It is included here as a reference
+    # so the integration testing suite knows which image to deploy during testing. This field
+    # is also used by the 'canonical/charming-actions' Github action for automated releasing.
+    upstream-source: thetorproject/obfs4-bridge:0.14
+
+
+storage:
+  data:
+    type: filesystem
+    description: >
+      Storage path for things like certs, fingerprint, etc.
+  logs:
+    type: filesystem
+    description: >
+      Storage path for tor logs
